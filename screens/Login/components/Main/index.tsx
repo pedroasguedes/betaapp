@@ -14,8 +14,8 @@ export default function Main(props){
             <TextInput secureTextEntry placeholder="Senha" style={styles.caixa}  value={senha} onChangeText={(value) =>setSenha(value)}/>
 
             <TouchableOpacity onPress={()=>{
-                efetuarLogin(usuario,senha);
-
+               // efetuarLogin(usuario,senha);
+                props.acao.navigate("Home");
 
             }}
              style={styles.btntllogin} >
