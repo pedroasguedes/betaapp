@@ -1,37 +1,47 @@
 import { useEffect, useState } from "react";
-import {Image, Text, View } from "react-native";
+import { Image, Text, View, ActivityIndicator, TouchableOpacity } from "react-native";
 import { ipspring } from "../../../Config/ip";
 
+export default function Content(props:any) {
+  const [carregando, setcarregando] = useState(true);
 
+  const [produtos, setProdutos] = useState([
+    {
+      idproduto: "",
+      nomeproduto: "",
+      preco: "",
+      foto1: "foto1.jpg",
+    },
+  ]);
 
-export default function Content(){
+  useEffect(() => {
+    fetch(`${ipspring}/api/produto/listar`)
+      .then((response) => response.json())
+      .then((rs) => {
+        setProdutos(rs);
+        setcarregando(false);
+      })
+      .catch((erro) => console.error(`Erro ao executar a api -> ${erro}`));
+  }, []);
 
-const [produtos ,setProdutos] = useState ([{
-    idproduto: "",
-    nomeprodutos: "",
-    preco:"",
-    foto1:"foto.jpg"
-}]);
-
-useEffect(()=>{
-fetch(`${ipspring}/api/produtos/listar`)
-.then((response)=>response.json())
-.then((rs)=>setProdutos(rs))
-.catch((erro)=> console.error(`Erro ao executar a api -> ${erro}`));
-}, []);
-
-return(
-    <View>
-        <Text>Conteúdo</Text>
-        {
-            produtos.map((itens,ix)=>(
-<View key={ix}>
-    <Image source={{uri:`${itens.foto1}`}} style={{width: 200, height: 200}}/>
-    <Text>{itens.nomeprodutos}</Text>
-    <Text>{itens.preco}</Text>
-</View> ))
-        }
-   
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignContent: "center" }}>
+      <Text>Conteúdo</Text>
+      {carregando ? (
+        <ActivityIndicator size={100} color={"#ft04"} />
+      ) : (
+        produtos.map((itens, ix) => (
+          <View key={ix}>
+            <TouchableOpacity onPress={()=>props.tela.navigate("Detalhes",{idproduto:itens.idproduto})}>
+              <Image
+              source={{ uri: itens.foto1 }}
+              style={{ width: 100, height: 100, resizeMode: "cover" }}/>
+            <Text>{itens.nomeproduto}</Text>
+            <Text>{itens.preco}</Text>
+            </TouchableOpacity>
+          </View>
+        ))
+      )}
     </View>
-        );
+  );
 }
